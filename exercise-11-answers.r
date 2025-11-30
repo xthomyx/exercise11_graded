@@ -1,0 +1,164 @@
+# ==============================================================================
+#  ____  _____ _____
+# |    \|   __| __  |  Data Science with R
+# |  |  |__   |    -|  Fall 2024
+# |____/|_____|__|__|
+#
+# Economic insecurity and religious reassurance (ESS) -- student answer script
+#
+# Group number:
+# Student 1: Emilie Vigneau
+# Student 2: Barbora Rapantova
+# Student 3: Thomas Chambrillon
+# Date: 12.12.2025
+#
+# Answers to questions
+# --------------------
+#
+# [ANSWER 2.1]: 53.5 %
+# [ANSWER 2.1]: 0.6 %
+# [ANSWER 2.1]: 1.5
+#
+# [ANSWER 3]:
+
+# mod <- lm(
+#    religious_att ~ age + employement_rel + sub_income +
+#        female * marital_status,
+#    data = df
+# )
+#
+# [ANSWER 4.1]: Yes (Estimate = 0.26 > 0)
+# [ANSWER 4.2]: Yes (Subjective Income Estimate = 0.17 > 0)
+#
+# That means that, the higher the subjective income  insecurity is,
+# the higher the religious attendance is.
+#
+# [ANSWER 4.3]:
+#
+# The interaction between the gender and the marital status is hard to
+# interpret, because of a high p-value. The Standard Error is even higher
+# than the Estimate itself, which means that the effect is not significant.
+#
+# [ANSWER 5]:
+#
+# [Replace this paragraph with your answer to Question 5. If your text goes
+# beyond 80 characters per line, break it into multiple shorter lines, as shown
+# here. Answer parsimoniously, and do _not_ exceed three lines of text.]
+#
+# [ANSWER 6.1]:
+# [ANSWER 6.2]:
+#
+# [Replace this paragraph with your answer to Question 6.2. If your text goes
+# beyond 80 characters per line, break it into multiple shorter lines, as shown
+# here. Answer parsimoniously, and do _not_ exceed three lines of text.]
+#
+# Feedback on the exercise
+# ------------------------
+#
+# [Feel free to replace this paragraph with your impressions on this exercise.
+# If your text goes beyond 80 characters per line, break it into shorter lines,
+# as demonstrated in this example paragraph.]
+#
+# ============================= See README file for data sources and details ===
+
+library(tidyverse)
+library(haven)
+
+# ------------------------------------------------------------------------------
+# 1. Access a dataset
+# ------------------------------------------------------------------------------
+
+df <- read_sav("data/ESS9e03_2/ESS9e03_2.sav")
+
+# ------------------------------------------------------------------------------
+# 2. Recode some variables
+# ------------------------------------------------------------------------------
+
+df <- rename(df, age = agea)
+df <- rename(df, female = gndr) %>%
+    mutate(df, female = if_else(female == 2, 1, 0))
+# some unlabeled values : 0 does not necessalry represent a male
+
+df <- rename(df, employement_rel = emplrel)
+
+df <- rename(df, marital_status = rshpsts) %>%
+    mutate(df, marital_status = case_when(
+        marital_status %in% c(1, 2) ~ 1,
+        marital_status %in% c(3, 4) ~ 3,
+        marital_status %in% c(5, 6) ~ 2,
+    ))
+
+df <- rename(df, sub_income = hincfel)
+
+df <- rename(df, religious_att = rlgatnd) %>%
+    mutate(religious_att = 7 - religious_att)
+
+# [QUESTION 2.1] Report the percentage of females in the sample
+
+female_percentage <- mean(df$female) * 100
+print(female_percentage)
+
+# [QUESTION 2.2] Report the percentage of separated, divorced or widowed
+#                individuals in the sample, after recoding marital status
+
+divorced_percentage <- mean(df$marital_status == 2, na.rm = TRUE) * 100
+print(divorced_percentage)
+
+# [QUESTION 2.3] Report average religious attendance in the sample, after
+#                recoding it, and treating it as a continuous measurement
+
+average_religious_attendance <- mean(df$religious_att, na.rm = TRUE)
+print(average_religious_attendance)
+
+# ------------------------------------------------------------------------------
+# 3. Write a multiple linear regression model
+# ------------------------------------------------------------------------------
+
+mod <- lm(
+    religious_att ~ age + employement_rel + sub_income +
+        female * marital_status,
+    data = df
+)
+
+print(summary(mod))
+# [QUESTION 3] Provide the formula of your model, in R syntax.
+
+# ------------------------------------------------------------------------------
+# 4. Interpret regression results
+# ------------------------------------------------------------------------------
+
+
+
+# [QUESTION 4.1] Do females report higher religious attendance than males,
+#                independently of age, employment status, marital status or
+#                subjective income? (Answer Yes or No.)
+
+# [QUESTION 4.2] Does the model support the view that economic insecurity
+#                increases religious attendance?
+
+# [QUESTION 4.3] How do you interpret the interaction in the model?
+
+# ------------------------------------------------------------------------------
+# 5. Diagnose a linear regression model
+# ------------------------------------------------------------------------------
+
+
+
+# [QUESTION 5] According to its residuals, how biased is the model, and what
+#              does that mean _in terms of its capacity to predict religious
+#              attendance_ from our list of predictors?
+
+# ------------------------------------------------------------------------------
+# 6. Start thinking beyond 'flat' models
+# ------------------------------------------------------------------------------
+
+
+
+# [QUESTION 6.1] Report the country-level effect for Poland.
+#                (Answer with a single number, rounded up to 1-digit precision.)
+
+# [QUESTION 6.2] Can you explain why I am asking you to include country of
+#                residence as a predictor, and if so, what kind of modelling
+#                strategy is being suggested to you here?
+
+# You are done -- thank you for your efforts!
